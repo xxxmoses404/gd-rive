@@ -94,7 +94,7 @@ Example persona files are provided with the plugin when initialized.
 ### File Overview
 
 #### `rive_engine.gd`
-- Main interpreter and runtime handler for `rive` files.
+- Main interpreter and runtime handler for `rive` files. Accesible as RiveEngine
 - Supports parsing, condition matching, macro execution, and global access.
 
 #### `rive_macros.gd`
@@ -109,7 +109,6 @@ Example persona files are provided with the plugin when initialized.
 ```
 res://
 ├── rive_engine/
-│   ├── rive_engine.gd
 │   ├── rive_macros.gd
 │   └── rive_conditions.gd
 ├── data/
@@ -125,7 +124,7 @@ res://
 └── scenes/
 	└── game_logic.tscn
 ```
-- `rive_engine/`: core engine singletons
+
 - `data/rive/`: shared dialogue knowledge ("brain")
 - `data/personas/`: individual character scripts
 
