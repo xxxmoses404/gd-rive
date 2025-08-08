@@ -373,9 +373,7 @@ Global access allows dialogue scripts to interact directly with autoloaded singl
 ### Key Considerations
 - Global access can read or modify runtime state.
 - Scripts should only access globals that are intended to be exposed.
-- Use `Engine.get_singleton()` internally to resolve singleton access.
 - Prefer encapsulated, readonly methods where possible to avoid accidental state mutation.
-
 - Scripts should only access globals that are intended to be exposed.
 - `RiveEngine` uses `Engine.get_singleton()` internally to resolve singleton access; if the global / autoload does not live in this space, it will not be accessible.
 - Prefer encapsulated, readonly methods where possible to avoid accidental state mutation.
