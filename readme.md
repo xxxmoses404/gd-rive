@@ -134,7 +134,7 @@ res://
 
 ### Public API
 - `switch_to_persona(name)` — Load persona-specific `rive` + shared brain
-- `reply(username, message)` — Get reply string from input
+- `reply(player_name, message)` — Get reply string from input
 - `load_brain(files)` — Manually load brain `rive` files
 - `load_persona(file)` — Load one persona `rive` file
 - `reset()` — Clear internal state except user memory
