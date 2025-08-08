@@ -140,9 +140,9 @@ res://
 - `reset()` — Clear internal state except user memory
 - `get_all_topics()` — Returns topic names
 - `get_triggers_for(topic)` — Lists triggers under a topic
-- `get_topic_tree()` — Exports the full topic tree inclusing all triggers
+- `get_topic_tree()` — Exports the full topic tree including all triggers
 - `register_all_macros()` — Re-scan `RiveMacros` for callable methods
-- `set_topic(username, topic_name)` — Force topic switch for a given character from outside of the conversation.
+- `set_topic(player_name, topic_name)` — Force topic switch for a given character from outside of the conversation.
 - `export_state()` — Exports the current state of the engine for saving in a custom resource or save system.
 - `restore_state(state)` — Import a previously exported engine state.
 
@@ -152,7 +152,7 @@ res://
 
 This section summarizes all core and extended tags and keywords available for scripting inside `rive` files.
 
-An authoring guide and cheatsheet is hosted in the plugin's **Rive Editor** for quick reference.
+An authoring guide and cheatsheet is hosted in the plugin's **Rive Editor** for quick reference (currently disabled as a window dialog due to a bug in responding to `close_requested` signal).
 
 ### Basic RiveScript Keywords
 - `> topic` / `< topic` — Define and close a topic block
