@@ -1,0 +1,26 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="gd_rive"
+run/main_scene="res://addons/gd_rive/editor/rive_editor.tscn"
+config/features=PackedStringArray("4.3", "Forward Plus")
+config/icon="res://icon.svg"
+
+[autoload]
+
+RiveConditions="*res://rive_engine/rive_conditions.gd"
+RiveMacros="*res://rive_engine/rive_macros.gd"
+RiveEngine="*res://addons/gd_rive/engine/rive_engine.gd"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/gd_rive/plugin.cfg")
