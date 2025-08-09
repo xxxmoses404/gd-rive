@@ -1,6 +1,6 @@
 extends Node
 
-var current_persona = ""
+var current_persona := ""
 
 var topics = {}
 var substitutions = {}
@@ -10,7 +10,10 @@ var user_vars = {}
 var user_topics = {}
 var object_macros = {}
 
-func _ready():
+signal topic_changed(topic_name: String)
+signal persona_changed(persona_name: String)
+
+func _ready() -> void:
 	register_all_macros()
 
 func get_all_brain_files() -> Array:
@@ -25,25 +28,28 @@ func get_all_brain_files() -> Array:
 			file_name = dir.get_next()
 	return files
 
-func load_brain(files: Array):
+func load_brain(files: Array) -> void:
 	for file in files:
 		load_file(file)
 
-func load_persona(file: String):
-	load_brain(get_all_brain_files())
+func load_persona(file: String, with_brain: bool = true) -> void:
+	if with_brain:
+		load_brain(get_all_brain_files())
+		
 	load_file(file)
 
-func switch_to_persona(persona: String):
+func switch_to_persona(persona: String, with_brain: bool = true) -> void:
 	reset()
-	load_persona("res://data/personas/%s.txt" % persona)
+	load_persona("res://data/personas/%s.txt" % persona, with_brain)
 	current_persona = persona
+	persona_changed.emit(current_persona)
 
-func reset():
+func reset() -> void:
 	topics.clear()
 	substitutions.clear()
 	arrays.clear()
 	
-func load_file(path: String):
+func load_file(path: String) -> void:
 	var file = FileAccess.open(path, FileAccess.READ)
 	var lines = []
 	while not file.eof_reached():
@@ -64,7 +70,7 @@ func get_topic_tree() -> Dictionary:
 		result[topic] = get_triggers_for(topic)
 	return result
 
-func register_all_macros():
+func register_all_macros() -> void:
 	object_macros.clear()
 	var script_methods = RiveMacros.get_method_list()
 	var base_class_methods = Node.new().get_method_list()
@@ -82,7 +88,7 @@ func register_all_macros():
 		if is_user_defined and not method_name.begins_with("_"):
 				object_macros[method_name] = method_name
 
-func export_state():
+func export_state() -> Dictionary:
 	return { 
 		"persona": current_persona,
 		"topics": topics,
@@ -93,7 +99,7 @@ func export_state():
 		"user_topics": user_topics
 	}
 	
-func restore_state(state: Dictionary):
+func restore_state(state: Dictionary) -> void:
 	current_persona = state["persona"]
 	topics = state["topics"]
 	substitutions = state["substitutions"]
@@ -103,7 +109,30 @@ func restore_state(state: Dictionary):
 	user_topics = state["user_topics"]
 	register_all_macros()
 
-func _process_script(lines: Array):
+func set_topic(username: String, new_topic: String) -> void:
+	user_topics[username] = new_topic
+	topic_changed.emit(new_topic)
+
+func reply(username: String, message: String) -> String:
+	message = _apply_subs(message.strip_edges().to_lower())
+
+	if not user_topics.has(username):
+		user_topics[username] = "default"
+		
+	if not user_vars.has(username):
+		user_vars[username] = {}
+		
+	var topic = user_topics[username]
+	var match_data = _match_trigger(topic, message, username)
+	var response = match_data["response"]
+	var stars = match_data["stars"]
+
+	if response == "":
+		return "I don't know how to respond to that."
+
+	return _process_reply(response, username, stars)
+
+func _process_script(lines: Array) -> void:
 	var topic = "default"
 	var trigger = ""
 	var is_macro = false
@@ -185,7 +214,7 @@ func _process_script(lines: Array):
 				else:
 					_parse_directive(content)
 
-func _parse_directive(content: String):
+func _parse_directive(content: String) -> void:
 	if content.begins_with("sub"):
 		var parts = content.replace("sub", "").strip_edges().split("=", false)
 		if parts.size() == 2:
@@ -409,28 +438,6 @@ func _eval_condition(condition: String, username: String) -> bool:
 	
 	return false
 
-# func _eval_condition(condition: String, username: String) -> bool:
-# 	# * <get mood> == happy => That’s great!
-# 	condition = condition.strip_edges()
-# 	var parts = condition.split("=>", false)
-# 	if parts.size() != 2:
-# 		return false
-# 	var expr = parts[0].strip_edges().replace("*", "").strip_edges()
-# 	var tokens = expr.split(" ")
-# 	if tokens.size() >= 3 and tokens[0].begins_with("<get"):
-# 		var varname = tokens[0].substr(5, tokens[0].length() - 6)
-# 		var op = tokens[1]
-# 		var val = tokens[2]
-# 		var user_val = user_vars.get(username, {}).get(varname, "")
-# 		match op:
-# 			"==": return user_val == val
-# 			"!=": return user_val != val
-# 			"<": return user_val < val
-# 			">": return user_val > val
-# 			"<=" : return user_val <= val
-# 			">=" : return user_val >= val
-# 	return false
-
 func _compare(a, b: String, op: String) -> bool:
 	# Try numeric comparison if possible
 	if a is String and a.is_valid_float() and b.is_valid_float():
@@ -631,58 +638,3 @@ func _process_reply(response: String, username: String, stars: Array = []) -> St
 				result = result.replace(placeholder, options[randi() % options.size()])
 
 	return result
-
-func set_topic(username: String, new_topic: String) -> void:
-	user_topics[username] = new_topic
-
-#func reply(username: String, message: String) -> String:
-	#message = _apply_subs(message.strip_edges().to_lower())
-	#if not user_topics.has(username):
-		#user_topics[username] = "default"
-		#
-	#if not user_vars.has(username):
-		#user_vars[username] = {}
-	#
-	#var topic = user_topics[username]
-	#var response = _match_trigger(topic, message, username)
-	#
-	#if response == "":
-		#return "I don't know how to respond to that."
-		#
-	#var re = RegEx.new()
-	#re.compile(".*")
-	#var match = re.search(message)
-	#var stars = []
-	#if match:
-		#stars = match.strings.slice(1, match.strings.size())
-	#return _process_reply(response, username, stars)
-	
-func reply(username: String, message: String) -> String:
-	message = _apply_subs(message.strip_edges().to_lower())
-
-	if not user_topics.has(username):
-		user_topics[username] = "default"
-		
-	if not user_vars.has(username):
-		user_vars[username] = {}
-		
-	var topic = user_topics[username]
-	var match_data = _match_trigger(topic, message, username)
-	var response = match_data["response"]
-	var stars = match_data["stars"]
-
-	if response == "":
-		return "I don't know how to respond to that."
-
-	return _process_reply(response, username, stars)
-
-#func speak(text: String):
-	#var voices = DisplayServer.tts_get_voices_for_language("en")
-	#if voices.size() > 0:
-		#for voice in voices:
-			#var voice_id = voices[0]
-			#DisplayServer.tts_stop()
-			#DisplayServer.tts_speak(text, voice)
-			
-	# Ensure tts_busy is reset after using ESpeak
-	# tts_busy = false

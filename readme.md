@@ -133,10 +133,10 @@ res://
 2. While the engine will function without a `persona`, it is recommended to call `switch_to_persona(persona)` before interaction.
 
 ### Public API
-- `switch_to_persona(name)` — Load persona-specific `rive` + shared brain
+- `switch_to_persona(name, with_brain)` — Load persona-specific `rive` from name;  `with_brain` optionally loads brain context (defaut `true`)
 - `reply(player_name, message)` — Get reply string from input
 - `load_brain(files)` — Manually load brain `rive` files
-- `load_persona(file)` — Load one persona `rive` file
+- `load_persona(file, with_brain)` — Load one persona `rive` file; `with_brain` optionally loads brain context (defaut `true`)
 - `reset()` — Clear internal state except user memory
 - `get_all_topics()` — Returns topic names
 - `get_triggers_for(topic)` — Lists triggers under a topic
@@ -145,6 +145,12 @@ res://
 - `set_topic(player_name, topic_name)` — Force topic switch for a given character from outside of the conversation.
 - `export_state()` — Exports the current state of the engine for saving in a custom resource or save system.
 - `restore_state(state)` — Import a previously exported engine state.
+
+#### Signals
+
+RiveEngine emits the following signals for tracking or listening to:
+- `topic_changed(topic_name: String)`
+- `persona_changed(persona_name: String)`
 
 ---
 

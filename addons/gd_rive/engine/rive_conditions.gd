@@ -14,3 +14,13 @@ func set_data(key: String, value) -> void:
 
 func get_data(key: String):
 	return data.get(key, null)
+
+func export_state() -> Dictionary:
+	return { 
+		"flags": flags,
+		"data": data,
+	}
+	
+func restore_state(state) -> void:
+	flags = state["flags"]
+	data = state["data"]
