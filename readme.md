@@ -411,8 +411,8 @@ Global access allows dialogue scripts to interact directly with autoloaded singl
 ** It won't budge.
 
 + what is my strength
-- You currently have <condition data.strength >= 10> => high strength.
-- <condition data.strength < 10> => low strength.
+* <condition data.strength >= 10> => You currently have high strength.
+* <condition data.strength < 10> => You are weak.
 
 + train
 - Your strength increases. <data strength=12>
