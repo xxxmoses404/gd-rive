@@ -1,4 +1,4 @@
-# GD-Rive (RiveScript Engine): Documentation
+# GD-Rive (RiveScript Engine)
 
 ## Introduction
 This custom RiveScript-inspired engine is designed for building deeply interactive, dynamic, and state-aware dialogue systems within Godot 4.x. 
@@ -15,7 +15,7 @@ It supports:
 
 **RiveScript**, created by [AiChaos](https://github.com/aichaos), is a lightweight scripting language designed for writing dialogue-based or narrative AI and chatbots. It uses [human-readable syntax](https://www.rivescript.com/docs/tutorial) to define triggers (user inputs) and replies (bot responses), making it easy for writers and designers to craft conversational logic without deep programming knowledge. It intends a simple and intuitive approach to personalized and reactive dialogue. You can find out more [here](https://github.com/aichaos/rivescript).
 
-In this project, it has been extended to integrate tightly with Godot, allowing scripts to interact with game state, call functions, and manage narrative flow through a custom engine.
+In this project, it has been extended to integrate tightly with Godot, allowing scripts to interact with game state, call functions, and manage narrative flow through a custom engine. GD-Rive isn't a 1:1 analogue implementation of RiveScript, nor does it implement all features in the RiveScript working draft. It provides a condensed sub-set suitable for game authoring and coupling with the Godot Engine.
 
 #### Why Another Dialogue System?
 
