@@ -24,7 +24,7 @@ bg_color = Color(0.121569, 0.121569, 0.121569, 1)
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4rmxd"]
 bg_color = Color(0.176471, 0.176471, 0.176471, 1)
 
-[sub_resource type="SyntaxHighlighter" id="SyntaxHighlighter_oewgr"]
+[sub_resource type="SyntaxHighlighter" id="SyntaxHighlighter_1x6v1"]
 script = ExtResource("2_q0v1w")
 
 [node name="RiveEditor" type="VBoxContainer"]
@@ -67,10 +67,14 @@ layout_mode = 2
 unique_name_in_owner = true
 layout_mode = 2
 selected = 0
-item_count = 2
+item_count = 4
 popup/item_0/text = "eleanora.txt"
-popup/item_1/text = "test.txt"
+popup/item_1/text = "gronk.txt"
 popup/item_1/id = 1
+popup/item_2/text = "sasha.txt"
+popup/item_2/id = 2
+popup/item_3/text = "test.txt"
+popup/item_3/id = 3
 
 [node name="Spacer_3" type="Control" parent="TopBar"]
 custom_minimum_size = Vector2(3, 0)
@@ -212,7 +216,7 @@ size_flags_vertical = 3
 theme = ExtResource("2_mqdp2")
 caret_blink = true
 caret_blink_interval = 0.8
-syntax_highlighter = SubResource("SyntaxHighlighter_oewgr")
+syntax_highlighter = SubResource("SyntaxHighlighter_1x6v1")
 highlight_all_occurrences = true
 highlight_current_line = true
 gutters_draw_line_numbers = true

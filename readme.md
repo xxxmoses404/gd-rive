@@ -115,7 +115,6 @@ res://
 │   ├── rive/
 │   │   ├── common.txt
 │   │   ├── lore.txt
-│   │   ├── emotes.txt
 │   │   └── quests.txt
 │   └── personas/
 │       ├── eleanora.txt
