@@ -59,7 +59,7 @@ graph TD
 
 GD-Rive can be installed as a plugin into your `addons` folder. After initialisation, you will need to reload your project.
 
-The plugin provides a rudimentary scriting interface to load `persona` files and `brain` files, featuring syntax highlighting and error indication. The **Rive Editor** also allows for testing, trigger, and topic discovery.
+The plugin provides a rudimentary scripting interface to load `persona` files and `brain` files, featuring syntax highlighting and error indication. The **Rive Editor** also allows for testing, trigger, and topic discovery.
 
 !["editor"](art/rive_editor.png)
 
