@@ -165,7 +165,7 @@ RiveEngine emits the following signals for tracking or listening to:
 
 This section summarizes all core and extended tags and keywords available for scripting inside `rive` files.
 
-An authoring guide and cheatsheet is hosted in the plugin's **Rive Editor** for quick reference (currently disabled as a window dialog due to a bug in responding to `close_requested` signal).
+An authoring guide and cheatsheet is hosted in the plugin's **Rive Editor** for quick reference.
 
 ### Basic RiveScript Keywords
 - `> topic` / `< topic` — Define and close a topic block

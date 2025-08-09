@@ -15,6 +15,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 
 [node name="HelpViewer" type="HSplitContainer" parent="VBoxContainer"]
 custom_minimum_size = Vector2(1024, 256)
@@ -178,6 +179,7 @@ Group related dialogue together. Switch topics using [code]<set topic=name>[/cod
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
+mouse_filter = 2
 alignment = 2
 
 [node name="CloseButton" type="Button" parent="VBoxContainer/HBoxContainer"]
@@ -187,4 +189,3 @@ layout_mode = 2
 text = "Close"
 
 [connection signal="close_requested" from="." to="." method="_on_close_requested"]
-[connection signal="pressed" from="VBoxContainer/HBoxContainer/CloseButton" to="." method="_on_close_button_pressed"]

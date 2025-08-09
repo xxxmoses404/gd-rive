@@ -8,7 +8,8 @@ const AUTOLOAD_PATH = "res://rive_engine"
 
 func hide_help():
 	if help_window and help_window.is_inside_tree():
-		help_window.close_requested.emit()
+		help_window.hide()
+		# help_window.queue_free()
 
 func _create_help_dialog():
 	pass
@@ -93,16 +94,21 @@ func _ensure_required_auto_loads():
 func _on_help_requested(requested: bool):
 	if requested:
 		if help_window and help_window.is_inside_tree():
-			#help_window.popup_centered()
-			#help_window.grab_focus()
-			#return
-			hide_help()
+			if not help_window.visible:
+				help_window.show()
+				
+			help_window.popup_centered()
+			help_window.grab_focus()
+			
+			return
 			
 		else:
 			var scene = load("res://addons/gd_rive/editor/help_viewer.tscn")
 			help_window = scene.instantiate()
 			get_editor_interface().get_base_control().add_child(help_window)
 			help_window.popup_centered()
+			
+			help_window.help_close_requested.connect(hide_help)
 		
 	else:
 		hide_help()
