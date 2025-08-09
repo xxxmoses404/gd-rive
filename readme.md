@@ -136,7 +136,10 @@ res://
 - `reply(player_name, message)` — Get reply string from input
 - `load_brain(files)` — Manually load brain `rive` files
 - `load_persona(file, with_brain)` — Load one persona `rive` file; `with_brain` optionally loads brain context (defaut `true`)
+- `load_persona_with_own_brain(files, persona)` — Load a persona with a specific set of brain files.
 - `reset()` — Clear internal state except user memory
+- `get_all_brain_files()` — Returns an array of all brain files from the conventional folder
+- `set_default_brain(files)` — Overwrites the selection of brain files commonly found via `get_all_brain_files()`
 - `get_all_topics()` — Returns topic names
 - `get_triggers_for(topic)` — Lists triggers under a topic
 - `get_topic_tree()` — Exports the full topic tree including all triggers
@@ -144,6 +147,11 @@ res://
 - `set_topic(player_name, topic_name)` — Force topic switch for a given character from outside of the conversation.
 - `export_state()` — Exports the current state of the engine for saving in a custom resource or save system.
 - `restore_state(state)` — Import a previously exported engine state.
+
+#### Fields
+
+- `brain_files: Array[String]` — An array of the default brain file paths.
+- `current_persona: String` — The persona of the current speaker
 
 #### Signals
 

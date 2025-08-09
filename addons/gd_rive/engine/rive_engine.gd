@@ -10,11 +10,14 @@ var user_vars = {}
 var user_topics = {}
 var object_macros = {}
 
+var brain_files = []
+
 signal topic_changed(topic_name: String)
 signal persona_changed(persona_name: String)
 
 func _ready() -> void:
 	register_all_macros()
+	brain_files = get_all_brain_files()
 
 func get_all_brain_files() -> Array:
 	var dir = DirAccess.open("res://data/rive")
@@ -28,13 +31,16 @@ func get_all_brain_files() -> Array:
 			file_name = dir.get_next()
 	return files
 
+func set_default_brain(files: Array):
+	brain_files = files
+
 func load_brain(files: Array) -> void:
 	for file in files:
 		load_file(file)
 
 func load_persona(file: String, with_brain: bool = true) -> void:
 	if with_brain:
-		load_brain(get_all_brain_files())
+		load_brain(brain_files if brain_files.size() > 0 else get_all_brain_files())
 		
 	load_file(file)
 
@@ -43,6 +49,10 @@ func switch_to_persona(persona: String, with_brain: bool = true) -> void:
 	load_persona("res://data/personas/%s.txt" % persona, with_brain)
 	current_persona = persona
 	persona_changed.emit(current_persona)
+
+func load_persona_with_own_brain(files: Array, persona: String):
+	load_brain(files)
+	load_persona(persona, false)
 
 func reset() -> void:
 	topics.clear()
