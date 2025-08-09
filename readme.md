@@ -19,7 +19,7 @@ In this project, it has been extended to integrate tightly with Godot, allowing 
 
 #### Why Another Dialogue System?
 
-GD-Rive doesn't intend to replace or compete with other dialogue managers, but to provide an alternative for specific use cases where a fluid narrative dialogue is preferred. Leveraging RiveScript essentially transforms any character (enemy, npc, companion, etc) in your game into a story and game world immersive chat-bot. Instead of dialogue trees and branches, it provides a non-linear, open, context aware, conversation driven dialogue engine. This system is intended predominantly for Open Narrative Visual Novels, Text Based Adventures, TTRPG simulators, User Content Extension, and other such game formats and concepts. For a more traditional dialogue systems, the excellent [Dialog Manager by Natha Hoad](https://github.com/nathanhoad/godot_dialogue_manager) is strongly recommended.
+GD-Rive doesn't intend to replace or compete with other dialogue managers, but to provide an alternative for specific use cases where a fluid narrative dialogue is preferred. Leveraging RiveScript essentially transforms any character (enemy, npc, companion, etc) in your game into a story and game world immersive chat-bot. Instead of dialogue trees and branches, it provides a non-linear, open, context aware, conversation driven dialogue engine. This system is intended predominantly for Open Narrative Visual Novels, Text Based Adventures, TTRPG simulators, User Content Extension, Procedural Quest and Content Generation, and other such game formats and concepts. For a more traditional dialogue systems, the excellent [Dialog Manager by Natha Hoad](https://github.com/nathanhoad/godot_dialogue_manager) is strongly recommended.
 
 ---
 
