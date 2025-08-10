@@ -41,33 +41,33 @@ func _ensure_required_directories():
 			if err != OK:
 				push_error("Failed to create directory: " + target_path)
 
-		# Copy pre-shipped files from template dir
-		var template_path = target_dirs[target_path]
+			# Copy pre-shipped files from template dir
+			var template_path = target_dirs[target_path]
 
-		if template_path and DirAccess.dir_exists_absolute(template_path):
-			var dir = DirAccess.open(template_path)
+			if template_path and DirAccess.dir_exists_absolute(template_path):
+				var dir = DirAccess.open(template_path)
 
-			if dir:
-				dir.list_dir_begin()
-				var file_name = dir.get_next()
+				if dir:
+					dir.list_dir_begin()
+					var file_name = dir.get_next()
 
-				while file_name != "":
-					if file_name.ends_with(".txt") and not file_name.begins_with("."):
-						var src = template_path + "/" + file_name
-						var dst = target_path + "/" + file_name
+					while file_name != "":
+						if file_name.ends_with(".txt") and not file_name.begins_with("."):
+							var src = template_path + "/" + file_name
+							var dst = target_path + "/" + file_name
 
-						if not FileAccess.file_exists(dst):
-							var src_file = FileAccess.open(src, FileAccess.READ)
-							var content = src_file.get_as_text()
-							src_file.close()
+							if not FileAccess.file_exists(dst):
+								var src_file = FileAccess.open(src, FileAccess.READ)
+								var content = src_file.get_as_text()
+								src_file.close()
 
-							var dst_file = FileAccess.open(dst, FileAccess.WRITE)
-							dst_file.store_string(content)
-							dst_file.close()
-							print("Copied:", dst)
-							
-					file_name = dir.get_next()
-				dir.list_dir_end()
+								var dst_file = FileAccess.open(dst, FileAccess.WRITE)
+								dst_file.store_string(content)
+								dst_file.close()
+								print("Copied:", dst)
+								
+						file_name = dir.get_next()
+					dir.list_dir_end()
 	
 func _ensure_required_auto_loads():
 	var autoload_files = {
@@ -78,18 +78,18 @@ func _ensure_required_auto_loads():
 	if not DirAccess.dir_exists_absolute(AUTOLOAD_PATH):
 		var err = DirAccess.make_dir_recursive_absolute(AUTOLOAD_PATH)
 		
-	for file in autoload_files.keys():
-		if not FileAccess.file_exists(autoload_files[file][1]):
-			var src_file = FileAccess.open(autoload_files[file][0], FileAccess.READ)
-			var content = src_file.get_as_text()
-			src_file.close()
+		for file in autoload_files.keys():
+			if not FileAccess.file_exists(autoload_files[file][1]):
+				var src_file = FileAccess.open(autoload_files[file][0], FileAccess.READ)
+				var content = src_file.get_as_text()
+				src_file.close()
 
-			var dst_file = FileAccess.open(autoload_files[file][1], FileAccess.WRITE)
-			dst_file.store_string(content)
-			dst_file.close()
-			print("Created:", autoload_files[file][1])
-			
-		add_autoload_singleton(file, autoload_files[file][1])
+				var dst_file = FileAccess.open(autoload_files[file][1], FileAccess.WRITE)
+				dst_file.store_string(content)
+				dst_file.close()
+				print("Created:", autoload_files[file][1])
+				
+			add_autoload_singleton(file, autoload_files[file][1])
 
 func _on_help_requested(requested: bool):
 	if requested:

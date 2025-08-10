@@ -24,7 +24,7 @@ bg_color = Color(0.121569, 0.121569, 0.121569, 1)
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4rmxd"]
 bg_color = Color(0.176471, 0.176471, 0.176471, 1)
 
-[sub_resource type="SyntaxHighlighter" id="SyntaxHighlighter_1e7i8"]
+[sub_resource type="SyntaxHighlighter" id="SyntaxHighlighter_nvx3k"]
 script = ExtResource("2_q0v1w")
 
 [node name="RiveEditor" type="VBoxContainer"]
@@ -215,7 +215,7 @@ size_flags_vertical = 3
 theme = ExtResource("2_mqdp2")
 caret_blink = true
 caret_blink_interval = 0.8
-syntax_highlighter = SubResource("SyntaxHighlighter_1e7i8")
+syntax_highlighter = SubResource("SyntaxHighlighter_nvx3k")
 highlight_all_occurrences = true
 highlight_current_line = true
 gutters_draw_line_numbers = true
