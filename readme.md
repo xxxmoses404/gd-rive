@@ -288,7 +288,14 @@ These tags enable persistent user memory. `<set>` stores a key-value pair specif
 ```rive
 ! var spell = {fireball|teleport|ice bolt}
 ```
-Defines bot-side variables used in responses. These can be referenced with `<bot spell>` to inject randomly chosen or static content. Useful for adding flavor and unpredictability.
+Defines bot-side variables used in responses. These can be referenced with `<bot [VARIABLE NAME]>` to inject randomly chosen or static content, e.g., for the above example 
+
+```
++ cast a spell
+- I cast <bot spell>
+```
+
+Useful for adding flavor and unpredictability.
 
 ---
 
