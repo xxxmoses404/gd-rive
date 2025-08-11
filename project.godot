@@ -20,7 +20,3 @@ config/icon="res://icon.svg"
 RiveConditions="*res://rive_engine/rive_conditions.gd"
 RiveMacros="*res://rive_engine/rive_macros.gd"
 RiveEngine="*res://addons/gd_rive/engine/rive_engine.gd"
-
-[editor_plugins]
-
-enabled=PackedStringArray("res://addons/gd_rive/plugin.cfg")

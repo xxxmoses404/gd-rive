@@ -124,7 +124,9 @@ func set_topic(username: String, new_topic: String) -> void:
 	topic_changed.emit(new_topic)
 
 func reply(username: String, message: String) -> String:
-	message = _apply_subs(message.strip_edges().to_lower())
+	# message = _apply_subs(message.strip_edges().to_lower())
+	var original = message.strip_edges()
+	var normalized = _normalize_message(_apply_subs(original))
 
 	if not user_topics.has(username):
 		user_topics[username] = "default"
@@ -133,7 +135,8 @@ func reply(username: String, message: String) -> String:
 		user_vars[username] = {}
 		
 	var topic = user_topics[username]
-	var match_data = _match_trigger(topic, message, username)
+	var match_data = _match_trigger(topic, normalized, username, original)
+	
 	var response = match_data["response"]
 	var stars = match_data["stars"]
 
@@ -141,6 +144,30 @@ func reply(username: String, message: String) -> String:
 		return "I don't know how to respond to that."
 
 	return _process_reply(response, username, stars)
+
+func is_ascii_alphanumeric(c: String) -> bool:
+	var code := c.unicode_at(0)
+	return (
+			(code >= 48 and code <= 57) 
+			or 
+			(code >= 65 and code <= 90) 
+			or 
+			(code >= 97 and code <= 122)
+		)
+
+func _normalize_message(message: String) -> String:
+	message = message.to_lower()
+	
+	var clean := ""
+	
+	for c in message:
+		if is_ascii_alphanumeric(c) or c == " ":
+			clean += c
+			
+		elif c == "'":  # allow apostrophes
+			clean += c
+	
+	return clean.strip_edges()
 
 func _process_script(lines: Array) -> void:
 	var topic = "default"
@@ -253,7 +280,7 @@ func _apply_subs(message: String) -> String:
 		message = message.replace(key, substitutions[key])
 	return message
 
-func _match_trigger(topic: String, message: String, username: String) -> Dictionary:
+func _match_trigger(topic: String, normalized: String, username: String, original: String) -> Dictionary:
 	var result := { "response": "", "stars": [] }
 	if not topics.has(topic):
 		return result
@@ -281,9 +308,26 @@ func _match_trigger(topic: String, message: String, username: String) -> Diction
 		if err != OK:
 			continue
 
-		var match = re.search(message)
+		var match = re.search(normalized)
+		
 		if match:
-			var stars = match.strings.slice(1)
+			
+			#var stars = match.strings.slice(1)
+			var stars = []
+			var groups = match.get_group_count()
+			
+			for i in range(1, groups + 1):
+				var raw = match.get_string(i)
+				if raw == "":
+					stars.append("")
+					continue
+					
+				var original_index = normalized.find(raw)
+				
+				if original_index != -1:
+					stars.append(original.substr(original_index, original.length()))
+				else:
+					stars.append(raw)  # fallback
 			
 			# Conditional check
 			if data.has("conditions"):
