@@ -1,5 +1,7 @@
 # GD-Rive (RiveScript Engine)
 
+##### [Godot Asset Library](https://godotengine.org/asset-library/asset/4221)
+
 ## Introduction
 This custom RiveScript-inspired engine is designed for building deeply interactive, dynamic, and state-aware dialogue systems within Godot 4.x. 
 
