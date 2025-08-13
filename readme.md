@@ -21,7 +21,7 @@ In this project, it has been extended to integrate tightly with Godot, allowing 
 
 #### Why Another Dialogue System?
 
-GD-Rive doesn't intend to replace or compete with other dialogue managers, but to provide an alternative for specific use cases where a fluid narrative dialogue is preferred. Leveraging RiveScript essentially transforms any character (enemy, npc, companion, etc) in your game into a story and game world immersive chat-bot. Instead of dialogue trees and branches, it provides a non-linear, open, context aware, conversation driven dialogue engine. This system is intended predominantly for Open Narrative Visual Novels, Text Based Adventures, TTRPG simulators, User Content Extension, Procedural Quest and Content Generation, and other such game formats and concepts. For a more traditional dialogue systems, the excellent [Dialogue Manager by Nathan Hoad](https://github.com/nathanhoad/godot_dialogue_manager) is strongly recommended.
+GD-Rive doesn't intend to replace or compete with other dialogue managers, but to provide an alternative for specific use cases where a fluid narrative dialogue is preferred. Leveraging RiveScript essentially transforms any character (enemy, npc, companion, etc) in your game into a story and game world immersive chat-bot. Instead of dialogue trees and branches, it provides a non-linear, open, context aware, conversation driven dialogue engine. This system is intended predominantly for Open Narrative Visual Novels, Text Based Adventures, TTRPG simulators, User Content Extension, Procedural Quest and Content Generation, and other such game formats and concepts. For more traditional dialogue systems, the excellent [Dialogue Manager by Nathan Hoad](https://github.com/nathanhoad/godot_dialogue_manager) is strongly recommended.
 
 ---
 
@@ -130,8 +130,17 @@ res://
 - `data/personas/`: individual character scripts
 
 ### Initializing the Engine
+
+```gdscript
+RiveEngine.[METHOD]
+```
+
 1. On startup, macros are auto-registered and `brain` files are loaded.
 2. While the engine will function without a `persona`, it is recommended to call `switch_to_persona(persona)` before interaction.
+
+```gdscript
+RiveEngine.switch_to_persona("gronk")
+```
 
 ### Public API
 - `switch_to_persona(name, with_brain)` — Load persona-specific `rive` from name;  `with_brain` optionally loads brain context (defaut `true`)
